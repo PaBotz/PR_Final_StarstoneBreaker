@@ -7,7 +7,7 @@ public class SCR_textoFlotante : MonoBehaviour
     [Header("Configuración de Animación")]
     [SerializeField] private float lifetime = 0.5f;
     [SerializeField] private float velocidadMovimiento = 2f;
-    [SerializeField] private float velocidadFade = 2f;
+    //[SerializeField] private float velocidadFade = 2f;
 
     private TextMeshPro textMesh; 
     private Color originalColor;

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5611563471278928995}
   - component: {fileID: 3926732281917757862}
+  - component: {fileID: 9140782245632457911}
   - component: {fileID: 7553138934057124546}
   - component: {fileID: 6766922513376381790}
   - component: {fileID: 2400936600488092196}
@@ -93,6 +94,31 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &9140782245632457911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7621911583152329271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3234092010
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &7553138934057124546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,6 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b2d907e0901d96448e11deddd9e009c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SCR_Disparo
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!61 &6766922513376381790
 BoxCollider2D:
   m_ObjectHideFlags: 0

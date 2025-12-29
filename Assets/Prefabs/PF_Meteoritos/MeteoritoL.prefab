@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5932779167245663307}
   - component: {fileID: 6958455869277678971}
   - component: {fileID: 1770594994324155449}
+  - component: {fileID: -5363321484039222501}
   - component: {fileID: 9135026695083483852}
   m_Layer: 0
   m_Name: MeteoritoL
@@ -166,6 +167,31 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &-5363321484039222501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3620839828332388118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 1010682185
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &9135026695083483852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4e872d9f8723f940a71e2659952cbfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SCR_Meteorito
+  ShowTopMostFoldoutHeaderGroup: 1
   tamano: 0
   prefab_Meteorito_M: {fileID: 3620839828332388118, guid: 38e966fb1cd90c444a6b445a04dc693e, type: 3}
   prefab_Meteorito_S: {fileID: 1545323662759810652, guid: 483599e9a768a5842b84201171200a8a, type: 3}
