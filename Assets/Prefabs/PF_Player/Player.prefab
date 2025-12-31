@@ -44,10 +44,10 @@ GameObject:
   - component: {fileID: 8704539966575615678}
   - component: {fileID: 4244587396695384211}
   - component: {fileID: 1130736977650879428}
+  - component: {fileID: -2331922958048423182}
   - component: {fileID: 6168224614868878659}
   - component: {fileID: 4767230032072851267}
   - component: {fileID: 4591810840580638455}
-  - component: {fileID: -2331922958048423182}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -169,11 +169,11 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkTransformExpanded: 0
   AutoOwnerAuthorityTickOffset: 1
-  PositionInterpolationType: 0
+  PositionInterpolationType: 1
   RotationInterpolationType: 0
   ScaleInterpolationType: 0
   PositionLerpSmoothing: 1
-  PositionMaxInterpolationTime: 0.1
+  PositionMaxInterpolationTime: 0.05
   RotationLerpSmoothing: 1
   RotationMaxInterpolationTime: 0.1
   ScaleLerpSmoothing: 1
@@ -190,7 +190,7 @@ MonoBehaviour:
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
-  PositionThreshold: 0.001
+  PositionThreshold: 0.0001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
   UseQuaternionSynchronization: 0
@@ -216,6 +216,33 @@ MonoBehaviour:
   balaPrefab: {fileID: 7621911583152329271, guid: 7e104786b2f846747b90b0b7d9c723a4, type: 3}
   puntoDeDisparo: {fileID: 8864759820191602956}
   teclaDisparo: 106
+  coloresJugadores:
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  posicionesX:
+  - -8
+  - -3
+  - 3
+  - 8
+--- !u!114 &-2331922958048423182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7292142245431169766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkRigidbody2D
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkRigidbodyBaseExpanded: 0
+  UseRigidBodyForMotion: 0
+  AutoUpdateKinematicState: 1
+  AutoSetKinematicOnDespawn: 1
 --- !u!50 &6168224614868878659
 Rigidbody2D:
   serializedVersion: 5
@@ -395,20 +422,3 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &-2331922958048423182
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7292142245431169766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkRigidbody2D
-  ShowTopMostFoldoutHeaderGroup: 1
-  NetworkRigidbodyBaseExpanded: 0
-  UseRigidBodyForMotion: 0
-  AutoUpdateKinematicState: 1
-  AutoSetKinematicOnDespawn: 1

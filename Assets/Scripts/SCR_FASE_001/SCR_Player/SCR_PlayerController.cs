@@ -21,7 +21,23 @@ public class SCR_PlayerController : NetworkBehaviour
 
     private float movimientoLateral;
     private float siguienteDisparo;
-    private float ultimoEnvio = 0f;
+    private float posicionXPendiente = float.MinValue;
+
+    [Header("Colores de Jugadores")]
+    [SerializeField]
+    private Color[] coloresJugadores = new Color[]
+{
+    Color.green,
+    Color.blue,
+    Color.red,
+    Color.yellow
+};
+
+    private SpriteRenderer spriteRenderer;
+
+    [Header("Posiciones de Spawn")]
+    [SerializeField] private float[] posicionesX = new float[] { -3f, -1f, 1f, 3f };
+
 
 
     private NetworkVariable<float> velocidad_JugadorActual = new NetworkVariable<float>();
@@ -65,17 +81,12 @@ public class SCR_PlayerController : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        // CAMBIO CLAVE: El owner lee el input y lo envía al servidor
+        // El owner envía su input al servidor
         if (IsOwner && !estaAturdido.Value)
         {
-            // Enviar movimiento al servidor
             if (movimientoLateral != 0)
             {
-                if (Time.time-ultimoEnvio>=Time.fixedDeltaTime) 
-                {
-                    MoverServerRpc(movimientoLateral);
-                    ultimoEnvio = Time.time;
-                }
+                MoverServerRpc(movimientoLateral);
             }
         }
     }
@@ -87,14 +98,53 @@ public class SCR_PlayerController : NetworkBehaviour
         if (estaAturdido.Value) return;
         if (configuracion == null) return;
 
+        // Si es la primera vez, usar la posición actual del rigidbody
+        if (posicionXPendiente == float.MinValue)
+        {
+            posicionXPendiente = rb.position.x;
+        }
 
-
-        // Usar el deltaTime del cliente en vez del servidor
-        float targetX = rb.position.x + direccion * velocidad_JugadorActual.Value * Time.fixedDeltaTime;
+        // Calcular nueva posición basada en la posición pendiente (no rb.position)
+        float targetX = posicionXPendiente + direccion * velocidad_JugadorActual.Value * Time.fixedDeltaTime;
         targetX = Mathf.Clamp(targetX, configuracion.minX, configuracion.maxX);
 
+        // Guardar para el próximo RPC
+        posicionXPendiente = targetX;
+
+        // Aplicar el movimiento
         rb.MovePosition(new Vector2(targetX, rb.position.y));
     }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        // Obtener el SpriteRenderer
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
+
+        int indiceJugador = (int)(OwnerClientId % 4);
+
+        // Asignar color según el ID del jugador
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = coloresJugadores[indiceJugador];
+        }
+
+        // Asignar posición según el ID del jugador (solo el servidor mueve)
+        if (IsServer)
+        {
+            float posX = posicionesX[indiceJugador];
+            transform.position = new Vector3(posX, transform.position.y, transform.position.z);
+
+            // Actualizar la posición pendiente también
+            posicionXPendiente = posX;
+        }
+    }
+
 
     // Input System callback - Solo el owner lo usa
     public void OnMove(InputValue value)
