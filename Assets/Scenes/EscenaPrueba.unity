@@ -721,11 +721,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 555424801}
-  m_Father: {fileID: 1238472551}
+  m_Father: {fileID: 814646103}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150, y: -110}
+  m_AnchoredPosition: {x: 235, y: -210}
   m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &351199981
@@ -773,7 +773,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 369282086}
-        m_TargetAssemblyTypeName: SCR_ConeccionNetworkUI, Assembly-CSharp
+        m_TargetAssemblyTypeName: SCR_ConexionNetworkUI, Assembly-CSharp
         m_MethodName: IniciarCliente
         m_Mode: 1
         m_Arguments:
@@ -1518,6 +1518,7 @@ RectTransform:
   m_Children:
   - {fileID: 843071974}
   - {fileID: 1238472551}
+  - {fileID: 351199980}
   - {fileID: 1679019859}
   - {fileID: 271211677}
   m_Father: {fileID: 369282085}
@@ -2255,7 +2256,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1228024230}
-  - {fileID: 351199980}
   m_Father: {fileID: 814646103}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -2308,7 +2308,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 369282086}
-        m_TargetAssemblyTypeName: SCR_ConeccionNetworkUI, Assembly-CSharp
+        m_TargetAssemblyTypeName: SCR_ConexionNetworkUI, Assembly-CSharp
         m_MethodName: IniciarHost
         m_Mode: 1
         m_Arguments:

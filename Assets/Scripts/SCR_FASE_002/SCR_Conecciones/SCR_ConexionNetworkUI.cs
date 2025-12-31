@@ -23,6 +23,22 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
     [SerializeField] private NetworkManager networkManager;
     [SerializeField] private UnityTransport transport;
 
+
+    void Awake()
+    {
+        // Configurar botones aquí - Awake es más confiable
+        if (boton_Host != null)
+        {
+            boton_Host.onClick.RemoveAllListeners(); 
+            boton_Host.onClick.AddListener(IniciarHost);
+        }
+
+        if (boton_Cliente != null)
+        {
+            boton_Cliente.onClick.RemoveAllListeners();
+            boton_Cliente.onClick.AddListener(IniciarCliente);
+        }
+    }
     void Start()
     {
         if (networkManager == null)
@@ -35,18 +51,20 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
             transport = FindFirstObjectByType<UnityTransport>();
         }
 
+        /*
         // Configurar botones de conexión
-       /* if (boton_Host != null)
+        if (boton_Host != null)
         {
             boton_Host.onClick.AddListener(IniciarHost);
         }
-
+                                                                     //Comentado, porque está generando conflictos en los botones.
         if (boton_Cliente != null)
         {
             boton_Cliente.onClick.AddListener(IniciarCliente);
-        } */
+        } 
+        */
+        // Configurar botón de iniciar partida
 
-        // NUEVO: Configurar botón de iniciar partida
         if (boton_IniciarPartida != null)
         {
             boton_IniciarPartida.onClick.AddListener(IniciarPartida);

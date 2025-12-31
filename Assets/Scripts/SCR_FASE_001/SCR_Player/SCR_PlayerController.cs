@@ -21,6 +21,8 @@ public class SCR_PlayerController : NetworkBehaviour
 
     private float movimientoLateral;
     private float siguienteDisparo;
+    private float ultimoEnvio = 0f;
+
 
     private NetworkVariable<float> velocidad_JugadorActual = new NetworkVariable<float>();
     private NetworkVariable<float> cadenciaDeDisparoActual = new NetworkVariable<float>();
@@ -69,7 +71,11 @@ public class SCR_PlayerController : NetworkBehaviour
             // Enviar movimiento al servidor
             if (movimientoLateral != 0)
             {
-                MoverServerRpc(movimientoLateral);
+                if (Time.time-ultimoEnvio>=Time.fixedDeltaTime) 
+                {
+                    MoverServerRpc(movimientoLateral);
+                    ultimoEnvio = Time.time;
+                }
             }
         }
     }
@@ -81,6 +87,9 @@ public class SCR_PlayerController : NetworkBehaviour
         if (estaAturdido.Value) return;
         if (configuracion == null) return;
 
+
+
+        // Usar el deltaTime del cliente en vez del servidor
         float targetX = rb.position.x + direccion * velocidad_JugadorActual.Value * Time.fixedDeltaTime;
         targetX = Mathf.Clamp(targetX, configuracion.minX, configuracion.maxX);
 
