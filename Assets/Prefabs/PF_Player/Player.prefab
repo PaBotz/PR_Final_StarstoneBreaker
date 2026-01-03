@@ -215,12 +215,14 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   balaPrefab: {fileID: 7621911583152329271, guid: 7e104786b2f846747b90b0b7d9c723a4, type: 3}
   puntoDeDisparo: {fileID: 8864759820191602956}
-  teclaDisparo: 106
+  teclaDisparo: 32
   coloresJugadores:
-  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0.89628124, g: 0, b: 1, a: 1}
   - {r: 0, g: 0, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  - {r: 1, g: 0.5377087, b: 0.015686274, a: 1}
+  - {r: 0.015686274, g: 1, b: 0.79479206, a: 1}
   posicionesX:
   - -8
   - -3

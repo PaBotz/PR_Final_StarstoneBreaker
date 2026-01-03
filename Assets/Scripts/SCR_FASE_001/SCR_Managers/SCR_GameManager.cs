@@ -3,11 +3,11 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-// GameManager con soporte de red - FASE 2 (CORREGIDO V2)
+// GameManager con soporte de red - FASE 2
 // 
 // CORRECCIONES:
-// - Agregado IsSpawned check en Update() para evitar RPCs antes de que la red esté lista
-// - Agregado IsSpawned check en todos los métodos que usan RPCs
+// Agregado IsSpawned check en Update() para evitar RPCs antes de que la red esté lista
+// Agreagdo IsSpawned check en todos los métodos que usan RPCs
 public class SCR_GameManager : NetworkBehaviour
 {
     public static SCR_GameManager Instancia { get; private set; }
@@ -59,12 +59,6 @@ public class SCR_GameManager : NetworkBehaviour
             configuracion = SCR_ConfiguracionJuego.Instancia;
         }
 
-        if (configuracion == null)
-        {
-            Debug.LogError("SCR_ConfiguracionJuego.Instancia es NULL! Asegúrate de que exista en la escena.");
-            return;
-        }
-
         if (IsServer)
         {
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
@@ -75,12 +69,12 @@ public class SCR_GameManager : NetworkBehaviour
                 puntajesPorJugador[NetworkManager.Singleton.LocalClientId] = 0;
             }
 
-            Debug.Log("GameManager listo en servidor. Esperando que Host inicie la partida...");
+            Debug.Log("Esperando que Host inicie la partida...");
         }
 
         partidaIniciada.OnValueChanged += OnPartidaIniciadaCambio;
 
-        Debug.Log($"GameManager OnNetworkSpawn - IsServer: {IsServer}, IsClient: {IsClient}, IsSpawned: {IsSpawned}");
+        Debug.Log($" Server = {IsServer}, Client = {IsClient}, Spawned = {IsSpawned}");
     }
 
     public override void OnNetworkDespawn()
@@ -100,7 +94,7 @@ public class SCR_GameManager : NetworkBehaviour
     {
         if (nuevo)
         {
-            Debug.Log("¡La partida ha comenzado!");
+            Debug.Log("La partida ha comenzado");
         }
     }
 
@@ -126,11 +120,11 @@ public class SCR_GameManager : NetworkBehaviour
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void ClienteSeDesconectaServerRpc(ulong clienteId)
     {
-        Debug.Log($"Cliente {clienteId} solicitó desconectarse");
+        Debug.Log($"Cliente {clienteId} solicito desconectarse");
         EliminarClienteCompletamente(clienteId);
     }
 
-    // Función que elimina al cliente de todo
+    // Funcion que elimina al cliente de todo
     private void EliminarClienteCompletamente(ulong clienteId)
     {
         if (!IsServer) return;
@@ -239,7 +233,7 @@ public class SCR_GameManager : NetworkBehaviour
 
     void Start()
     {
-        // Backup para obtener configuración
+        // Backup para obtener configuracion
         if (configuracion == null)
         {
             configuracion = SCR_ConfiguracionJuego.Instancia;
@@ -248,7 +242,7 @@ public class SCR_GameManager : NetworkBehaviour
 
     void Update()
     {
-        // CRÍTICO: Verificar IsSpawned antes de cualquier operación de red
+        // Verificar IsSpawned antes de cualquier operación de red
         if (!IsServer) return;
         if (!IsSpawned) return;  // <-- ESTA LÍNEA EVITA EL ERROR
         if (!juegoActivo.Value) return;
@@ -348,7 +342,7 @@ public class SCR_GameManager : NetworkBehaviour
         }
     }
 
-    // Método auxiliar para enviar puntajes
+    // Funcion auxiliar para enviar puntajes
     void EnviarPuntajesATodos()
     {
         if (!IsServer || !IsSpawned) return;
@@ -452,7 +446,7 @@ public class SCR_GameManager : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        // Reiniciar estado
+        // Reinicia estado
 
         partidaIniciada.Value = false;
         EmpezarJuego();

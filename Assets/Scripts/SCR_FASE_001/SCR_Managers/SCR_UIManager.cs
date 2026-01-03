@@ -17,7 +17,7 @@ public class SCR_UIManager : MonoBehaviour
     public static SCR_UIManager Instancia { get; private set; }
 
     [Header("Referencias UI - SinglePlayer")]
-    [SerializeField] private TextMeshProUGUI texto_Puntaje; //Mantener para compatibilidad ELIMINAR?
+    [SerializeField] private TextMeshProUGUI texto_Puntaje; //Mantener para compatibilidad ELIMINAR? Fase1
     [SerializeField] private TextMeshProUGUI texto_Temporizador;
 
     [Header("Referencias UI - Multiplayer FASE 2")]
@@ -27,7 +27,7 @@ public class SCR_UIManager : MonoBehaviour
 
     [Header("Game Over")]
     [SerializeField] private GameObject panel_FinDelJuego;
-    [SerializeField] private TextMeshProUGUI texto_PuntajeFinal; // Mantener para compatibilidad ELIMINAR?
+    [SerializeField] private TextMeshProUGUI texto_PuntajeFinal; // Mantener para compatibilidad ELIMINAR? Fase1
     [SerializeField] private Transform transform_Ranking; // Panel donde irá el ranking
     [SerializeField] private GameObject panel_Ranking;
     [SerializeField] private GameObject prefab_TextoRanking; // Prefab para cada línea del ranking
@@ -103,8 +103,8 @@ public class SCR_UIManager : MonoBehaviour
     }
 
 
-    // NUEVO: Crear texto de puntaje para un jugador
-    void CrearTextoJugador(ulong clientId, int puntaje) // Creo que no se usa, solo es por si algo. Ya lo veremos
+    // Crear texto de puntaje para un jugador
+    void CrearTextoJugador(ulong clientId, int puntaje) // Creo que no se usa, solo es por si algo. Ya lo veremos //Sebas: ahora se usa
     {
         // Si tenemos prefab, usarlo
         if (prefab_TextoJugador != null && contenedor_PuntajesJugadores != null)
@@ -118,7 +118,7 @@ public class SCR_UIManager : MonoBehaviour
                 textosPorJugador[clientId] = tmp;
             }
         }
-        // Si no hay prefab, usar el texto único (fallback)
+        // Si no hay prefab, usar el texto único 
         else if (texto_Puntaje != null && textosPorJugador.Count == 0)
         {
             texto_Puntaje.text = $"Jugador {clientId}: {puntaje}";
@@ -152,7 +152,7 @@ public class SCR_UIManager : MonoBehaviour
         }
     }*/
 
-    // NUEVO: Mostrar ranking de múltiples jugadores
+    // FASE2 Mostrar ranking de múltiples jugadores
 
     public void MostrarRanking(List<KeyValuePair<ulong, int>> ranking)
     {
@@ -178,16 +178,16 @@ public class SCR_UIManager : MonoBehaviour
         {
             ulong clientId = ranking[i].Key;
             int puntaje = ranking[i].Value;
-            string medalla = ObtenerMedalla(i);
+            
 
-            CrearLineaRanking(i + 1, clientId, puntaje, medalla);
+            CrearLineaRanking(i + 1, clientId, puntaje);
         }
 
-        Debug.Log("=== RANKING MOSTRADO ===");
+        Debug.Log("RANKING MOSTRADO");
     }
 
-    // NUEVO: Crear una línea del ranking
-    void CrearLineaRanking(int posicion, ulong clientId, int puntaje, string medalla)
+    //  Crear una línea del ranking
+    void CrearLineaRanking(int posicion, ulong clientId, int puntaje)
     {
         // Si tenemos prefab y contenedor, crear texto
         if (prefab_TextoRanking != null && transform_Ranking != null)
@@ -197,7 +197,7 @@ public class SCR_UIManager : MonoBehaviour
 
             if (tmp != null)
             {
-                tmp.text = $"{medalla} #{posicion} - Jugador {clientId}: {puntaje} puntos";
+                tmp.text = $"#{posicion} - Jugador {clientId}: {puntaje} puntos";
 
                 // Colorear según posición
                 tmp.color = posicion switch
@@ -212,21 +212,8 @@ public class SCR_UIManager : MonoBehaviour
         // Fallback: Usar texto único
         else if (texto_PuntajeFinal != null)
         {
-            texto_PuntajeFinal.text += $"\n{medalla} Jugador {clientId}: {puntaje} puntos";
+            texto_PuntajeFinal.text += $"Jugador {clientId}: {puntaje} puntos";
         }
-    }
-
-
-    // NUEVO: Obtener emoji de medalla según posición
-    string ObtenerMedalla(int indice)
-    {
-        return indice switch
-        {
-            0 => "🥇",
-            1 => "🥈",
-            2 => "🥉",
-            _ => "  "
-        };
     }
 
 
@@ -237,7 +224,6 @@ public class SCR_UIManager : MonoBehaviour
             panel_FinDelJuego.SetActive(false);
         }
 
-        // NUEVO
         // Limpiar textos de jugadores
         foreach (var texto in textosPorJugador.Values)
         {

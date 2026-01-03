@@ -91,7 +91,7 @@ public class SCR_PlayerController : NetworkBehaviour
         }
     }
 
-    // NUEVO: El servidor recibe el input y mueve el player
+    // El servidor recibe el input y mueve el player
     [ServerRpc]
     void MoverServerRpc(float direccion)
     {

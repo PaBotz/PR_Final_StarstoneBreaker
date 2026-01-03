@@ -76,19 +76,6 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
             transport = FindFirstObjectByType<UnityTransport>();
         }
 
-        /*
-        // Configurar botones de conexión
-        if (boton_Host != null)
-        {
-            boton_Host.onClick.AddListener(IniciarHost);
-        }
-                                                                     //Comentado, porque está generando conflictos en los botones.
-        if (boton_Cliente != null)
-        {
-            boton_Cliente.onClick.AddListener(IniciarCliente);
-        } 
-        */
-        // Configurar botón de iniciar partida
 
         if (boton_IniciarPartida != null)
         {
@@ -128,12 +115,14 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
 
         NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(datosRelay);
 
-        //7 Conectar (crea el server)
+        //7. Conectar (crea el server)
 
 
         ActualizarTextoEstado("Inicializando como Host...");
 
-        
+        //8. Aquí es donde hace la funcion de conectarse, pero fusionado con la funcionalidad anterior de comprobación de eventos.
+        // de normal solo hace falta que esté esto  "NetworkManager.Singleton.StartHost();"
+
         bool success = NetworkManager.Singleton.StartHost();
 
         if (success)
@@ -166,9 +155,11 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
 
         JoinAllocation serverDeUnity = await RelayService.Instance.JoinAllocationAsync(codigoPartida);
 
-        //2.
+        // 2. Para que se conecte con el relay asignado
 
         RelayServerData datosRelay = AllocationUtils.ToRelayServerData(serverDeUnity, "udp");
+
+        //3. buscar el componente UnityTransport
 
         NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(datosRelay);
 
@@ -187,6 +178,9 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
             transport.ConnectionData.Address = inputField_IP.text;
         }
 
+        // 4. Aquí es donde hace la funcion de conectarse, pero fusionado con la funcionalidad anterior de comprobación de eventos.
+        // de normal solo hace falta que esté esto  "NetworkManager.Singleton.StartClient();"
+
         bool success = NetworkManager.Singleton.StartClient();
 
         if (success)
@@ -199,7 +193,7 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
         }
         else
         {
-            ActualizarTextoEstado("ERROR: Fallo al conectar Cliente!", true);
+            ActualizarTextoEstado("ERROR: Fallo al conectar Cliente", true);
         }
     }
 
@@ -214,9 +208,9 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
         }
         else if (NetworkManager.Singleton.IsClient)
         {
-            ActualizarTextoEstado("Conectado al servidor! Esperando que Host inicie...");
+            ActualizarTextoEstado("Conectado al servidor. Esperando que Host inicie...");
             EsconderConexionUI();
-            MostrarPanelEspera(false); // Cliente ve panel pero sin botón de iniciar
+            MostrarPanelEspera(false); // Cliente ve panel pero sin boton de iniciar
         }
     }
 
@@ -228,9 +222,9 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
         MuestraConexionUI();
     }
 
-    // ========================================
-    // NUEVO: LÓGICA DEL PANEL DE ESPERA
-    // ========================================
+
+    // LOGICA DEL PANEL DE ESPERA
+    // Si eres el host qeuda activado,  si eres cliente se desactiva.
 
     void MostrarPanelEspera(bool esHost)
     {
@@ -248,8 +242,8 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
         ActualizarContadorJugadores();
     }
 
-    // NUEVO: Llamado por SCR_GameManager cuando el juego empieza
-    public void OcultarPanelEspera()
+
+    public void OcultarPanelEspera()     // Llamado por SCR_GameManager cuando el juego empieza
     {
         if (panel_Espera != null)
         {
@@ -266,7 +260,7 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
         }
     }
 
-    // NUEVO: Botón para que el Host inicie la partida
+    // Boton para que el Host inicie la partida
     void IniciarPartida()
     {
         if (!NetworkManager.Singleton.IsHost)
@@ -280,15 +274,11 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
         {
             SCR_GameManager.Instancia.IniciarPartida();
         }
-        else
-        {
-            Debug.LogError("SCR_GameManager.Instancia es NULL! Asegúrate de que exista en la escena.");
-        }
+      
     }
 
-    // ========================================
-    // MÉTODOS AUXILIARES
-    // ========================================
+
+    // METODOS AUXILIARES
 
     private void ActualizarTextoEstado(string mensaje, bool daError = false)
     {
@@ -337,7 +327,7 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
         // Si soy cliente, avisar al servidor antes de desconectar
         if (NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
         {
-            // Avisar al GameManager que me voy
+            // Avisa al GameManager que me voy
             if (SCR_GameManager.Instancia != null)
             {
                 SCR_GameManager.Instancia.ClienteSeDesconectaServerRpc(NetworkManager.Singleton.LocalClientId);
