@@ -130,7 +130,8 @@ public class SCR_Meteorito : NetworkBehaviour
             LanzarDadoPowerUp();
 
             //Suma Puntos
-            MostrarPuntajeRpc(puntos, transform.position); // SCR_GameManager.Instancia.SumarPuntosServerRpc(clientId, puntos); CAMBIALO cuando se modifique el gameManager
+            //MostrarPuntajeRpc(puntos, transform.position);
+            SCR_GameManager.Instancia.SumarPuntosServerRpc(clientId, puntos); ///CAMBIALO cuando se modifique el gameManager
 
             //Dividir el meteoro en meteoritos
             SpawnFragmentos();

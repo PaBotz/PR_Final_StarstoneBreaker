@@ -122,17 +122,72 @@ public class SCR_GameManager : NetworkBehaviour
         }
     }
 
+    // RPC para que el cliente avise que se va
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void ClienteSeDesconectaServerRpc(ulong clienteId)
+    {
+        Debug.Log($"Cliente {clienteId} solicitó desconectarse");
+        EliminarClienteCompletamente(clienteId);
+    }
+
+    // Función que elimina al cliente de todo
+    private void EliminarClienteCompletamente(ulong clienteId)
+    {
+        if (!IsServer) return;
+
+        Debug.Log($"Eliminando cliente {clienteId} de todas las listas...");
+
+        // 1. Eliminar de puntajes
+        if (puntajesPorJugador.ContainsKey(clienteId))
+        {
+            puntajesPorJugador.Remove(clienteId);
+            Debug.Log($"Cliente {clienteId} eliminado de puntajes");
+        }
+
+        // 2. Destruir el Player del cliente
+        foreach (var player in FindObjectsByType<SCR_PlayerController>(FindObjectsSortMode.None))
+        {
+            if (player.OwnerClientId == clienteId)
+            {
+                if (player.NetworkObject != null && player.NetworkObject.IsSpawned)
+                {
+                    player.NetworkObject.Despawn();
+                }
+                Destroy(player.gameObject);
+                Debug.Log($"Player de cliente {clienteId} destruido");
+                break;
+            }
+        }
+
+        // 3. Actualizar UI para todos
+        if (IsSpawned)
+        {
+            EnviarPuntajesATodos();
+            NotificarJugadoresConectadosRpc(NetworkManager.Singleton.ConnectedClientsIds.Count - 1);
+        }
+
+        Debug.Log($"Cliente {clienteId} eliminado completamente. Slot liberado.");
+    }
+
+
+
+    // Modificar OnClientDisconnected para limpiar también
     void OnClientDisconnected(ulong clientId)
     {
         if (!IsServer) return;
 
-        Debug.Log($"Jugador {clientId} desconectado");
+        Debug.Log($"Cliente {clientId} desconectado");
+
+        // Limpiar todo del cliente que se fue
+        EliminarClienteCompletamente(clientId);
 
         if (IsSpawned)
         {
             NotificarJugadoresConectadosRpc(NetworkManager.Singleton.ConnectedClientsIds.Count);
         }
     }
+
+
 
     [Rpc(SendTo.Everyone)]
     void NotificarJugadoresConectadosRpc(int cantidad)
@@ -354,27 +409,6 @@ public class SCR_GameManager : NetworkBehaviour
         {
             Debug.Log($"Jugador {jugador.Key}: {jugador.Value} puntos");
         }
-    }
-
-    [Rpc(SendTo.Everyone)]
-    void MostrarRankingRpc(ulong[] clienteIds, int[] puntajes)
-    {
-        List<KeyValuePair<ulong, int>> rankingList = new List<KeyValuePair<ulong, int>>();
-
-        for (int i = 0; i < clienteIds.Length; i++)
-        {
-            rankingList.Add(new KeyValuePair<ulong, int>(clienteIds[i], puntajes[i]));
-        }
-
-        if (SCR_UIManager.Instancia != null)
-        {
-            SCR_UIManager.Instancia.MostrarRanking(rankingList);
-        }
-    }
-
-    public void RestarJuego()
-    {
-        if (!IsServer) return;
 
         foreach (GameObject meteorito in GameObject.FindGameObjectsWithTag("Meteorito"))
         {
@@ -395,8 +429,31 @@ public class SCR_GameManager : NetworkBehaviour
             }
             Destroy(powerUp);
         }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    void MostrarRankingRpc(ulong[] clienteIds, int[] puntajes)
+    {
+        List<KeyValuePair<ulong, int>> rankingList = new List<KeyValuePair<ulong, int>>();
+
+        for (int i = 0; i < clienteIds.Length; i++)
+        {
+            rankingList.Add(new KeyValuePair<ulong, int>(clienteIds[i], puntajes[i]));
+        }
+
+        if (SCR_UIManager.Instancia != null)
+        {
+            SCR_UIManager.Instancia.Activar_panelRanking();
+            SCR_UIManager.Instancia.MostrarRanking(rankingList);
+        }
+    }
+
+    public void RestarJuego()
+    {
+        if (!IsServer) return;
 
         // Reiniciar estado
+
         partidaIniciada.Value = false;
         EmpezarJuego();
         partidaIniciada.Value = true;

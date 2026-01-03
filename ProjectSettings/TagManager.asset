@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Meteorito
   - Bala
+  - PowerUp
   layers:
   - Default
   - TransparentFX

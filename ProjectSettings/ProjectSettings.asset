@@ -913,11 +913,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 82ad57c6-38ab-45da-8d84-f183046aba54
+  cloudProjectId: ec460c68-9a23-4e69-8d7c-c13cef3b6001
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: My project (2) 2025-12-10_17-49-35
-  organizationId: pabloposada7
+  projectName: PR_Final_StarstoneBreaker
+  organizationId: pablonde
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

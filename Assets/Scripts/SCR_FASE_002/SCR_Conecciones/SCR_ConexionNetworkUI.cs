@@ -1,6 +1,13 @@
+using System;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,9 +17,11 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
     [Header("UI Referencias - Conexión")]
     [SerializeField] private Button boton_Host;
     [SerializeField] private Button boton_Cliente;
-    [SerializeField] private TMP_InputField inputField_IP;
     [SerializeField] private TextMeshProUGUI texto_Estado;
-    [SerializeField] private GameObject panel_Coneccion;
+    [SerializeField] private GameObject panel_Conexion;
+    [SerializeField] private GameObject panel_Ranking;
+    [SerializeField] private GameObject panel_FinJuego;
+    [SerializeField] private GameObject panel_Puntajes;
 
     [Header("UI Referencias - Sala de Espera (NUEVO)")]
     [SerializeField] private GameObject panel_Espera;              // Panel que se muestra mientras esperan
@@ -22,6 +31,12 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
     [Header("Network Referencias")]
     [SerializeField] private NetworkManager networkManager;
     [SerializeField] private UnityTransport transport;
+
+    [Header("Relay Fase3")]
+    public TextMeshProUGUI codigoRelay;
+    public TMP_InputField inputField_IP;
+
+
 
 
     void Awake()
@@ -39,8 +54,18 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
             boton_Cliente.onClick.AddListener(IniciarCliente);
         }
     }
-    void Start()
+    async public void Start()
     {
+        //1. iniciar los servicios de la nube
+
+        await UnityServices.InitializeAsync();
+
+        //2. Autenticar al usuario (anonimo)
+
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+
+
         if (networkManager == null)
         {
             networkManager = FindFirstObjectByType<NetworkManager>();
@@ -72,10 +97,10 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
         }
 
         // IP por defecto
-        if (inputField_IP != null && string.IsNullOrEmpty(inputField_IP.text))
+       /* if (inputField_IP != null && string.IsNullOrEmpty(inputField_IP.text))
         {
             inputField_IP.text = "127.0.0.1";
-        }
+        } */ // Fase 2
 
         // Ocultar panel de espera al inicio
         if (panel_Espera != null)
@@ -85,14 +110,40 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
     }
 
     // Inicia el juego como Host (servidor + cliente)
-    public void IniciarHost()
+    public async void IniciarHost()
     {
+        //3. Pedirle a Unity el espacio en la nube (allocation)   //Crear el espacio en la nube para iniciar el juego
+
+        Allocation serverUnity = await RelayService.Instance.CreateAllocationAsync(4);
+
+
+
+        //6. Configuracion del Unity Transport
+
+            //6.1 Para que se conecte con el relay asignado
+
+        RelayServerData datosRelay = AllocationUtils.ToRelayServerData(serverUnity, "udp");
+
+            //6.2 buscar el componente UnityTransport
+
+        NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(datosRelay);
+
+        //7 Conectar (crea el server)
+
+
         ActualizarTextoEstado("Inicializando como Host...");
 
-        bool success = networkManager.StartHost();
+        
+        bool success = NetworkManager.Singleton.StartHost();
 
         if (success)
         {
+        //4.Obtener el codigo de la partida    //aqui te da el Id del espacio creado arriba
+
+        string codigoPartida = await RelayService.Instance.GetJoinCodeAsync(serverUnity.AllocationId);
+
+        //5. Le damos el valor del Id del espacio creado al TextMeshProUGUI con el codigo
+        codigoRelay.text = codigoPartida;
             ActualizarTextoEstado("Host Inicializado! Esperando Clientes...");
             EsconderConexionUI();
             MostrarPanelEspera(true); // NUEVO: Mostrar panel de espera
@@ -107,8 +158,21 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
     }
 
     // Inicia el juego como Client (solo cliente)
-    public void IniciarCliente()
+    public async void IniciarCliente()
     {
+        // 1. Obtener el codigo del relay a partir del codigo de la partida
+
+        string codigoPartida = inputField_IP.text;
+
+        JoinAllocation serverDeUnity = await RelayService.Instance.JoinAllocationAsync(codigoPartida);
+
+        //2.
+
+        RelayServerData datosRelay = AllocationUtils.ToRelayServerData(serverDeUnity, "udp");
+
+        NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(datosRelay);
+
+      
         ActualizarTextoEstado("Inicializando como Cliente...");
 
         if (inputField_IP == null || string.IsNullOrEmpty(inputField_IP.text))
@@ -123,7 +187,7 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
             transport.ConnectionData.Address = inputField_IP.text;
         }
 
-        bool success = networkManager.StartClient();
+        bool success = NetworkManager.Singleton.StartClient();
 
         if (success)
         {
@@ -142,6 +206,7 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
     // Callback cuando un cliente se conecta
     private void ConectarCliente(ulong clienteID)
     {
+
         if (NetworkManager.Singleton.IsHost)
         {
             ActualizarTextoEstado($"Cliente {clienteID} conectado!");
@@ -241,17 +306,17 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
 
     private void EsconderConexionUI()
     {
-        if (panel_Coneccion != null)
+        if (panel_Conexion != null)
         {
-            panel_Coneccion.SetActive(false);
+            panel_Conexion.SetActive(false);
         }
     }
 
     private void MuestraConexionUI()
     {
-        if (panel_Coneccion != null)
+        if (panel_Conexion != null)
         {
-            panel_Coneccion.SetActive(true);
+            panel_Conexion.SetActive(true);
         }
     }
 
@@ -263,5 +328,34 @@ public class SCR_ConexionNetworkUI : MonoBehaviour
             networkManager.OnClientConnectedCallback -= ConectarCliente;
             networkManager.OnClientDisconnectCallback -= DesconectarCliente;
         }
+    }
+
+    public void Desconectar()
+    {
+        Debug.Log("Desconectando...");
+
+        // Si soy cliente, avisar al servidor antes de desconectar
+        if (NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
+        {
+            // Avisar al GameManager que me voy
+            if (SCR_GameManager.Instancia != null)
+            {
+                SCR_GameManager.Instancia.ClienteSeDesconectaServerRpc(NetworkManager.Singleton.LocalClientId);
+            }
+        }
+
+
+        NetworkManager.Singleton.Shutdown();
+        panel_Conexion.SetActive(true);
+        panel_FinJuego.SetActive(false);
+        panel_Puntajes.SetActive(false);
+        panel_Ranking.SetActive(false);
+        panel_Espera.SetActive(false);
+        
+    }
+    public void SalirAplicacion() 
+    {
+        Debug.Log("Saliendo");
+        Application.Quit();
     }
 }

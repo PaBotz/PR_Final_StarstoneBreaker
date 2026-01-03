@@ -28,7 +28,8 @@ public class SCR_UIManager : MonoBehaviour
     [Header("Game Over")]
     [SerializeField] private GameObject panel_FinDelJuego;
     [SerializeField] private TextMeshProUGUI texto_PuntajeFinal; // Mantener para compatibilidad ELIMINAR?
-    [SerializeField] private Transform panel_Ranking; // Panel donde irá el ranking
+    [SerializeField] private Transform transform_Ranking; // Panel donde irá el ranking
+    [SerializeField] private GameObject panel_Ranking;
     [SerializeField] private GameObject prefab_TextoRanking; // Prefab para cada línea del ranking
 
 
@@ -158,9 +159,9 @@ public class SCR_UIManager : MonoBehaviour
         panel_FinDelJuego.SetActive(true);
 
         // Limpiar ranking anterior
-        if (panel_Ranking != null)
+        if (transform_Ranking != null)
         {
-            foreach (Transform child in panel_Ranking)
+            foreach (Transform child in transform_Ranking)
             {
                 Destroy(child.gameObject);
             }
@@ -189,9 +190,9 @@ public class SCR_UIManager : MonoBehaviour
     void CrearLineaRanking(int posicion, ulong clientId, int puntaje, string medalla)
     {
         // Si tenemos prefab y contenedor, crear texto
-        if (prefab_TextoRanking != null && panel_Ranking != null)
+        if (prefab_TextoRanking != null && transform_Ranking != null)
         {
-            GameObject lineaObj = Instantiate(prefab_TextoRanking, panel_Ranking);
+            GameObject lineaObj = Instantiate(prefab_TextoRanking, transform_Ranking);
             TextMeshProUGUI tmp = lineaObj.GetComponent<TextMeshProUGUI>();
 
             if (tmp != null)
@@ -247,7 +248,13 @@ public class SCR_UIManager : MonoBehaviour
         }
         textosPorJugador.Clear(); // Vaciar todo el dictionary
 
+        panel_Ranking.SetActive(false);
+
         SCR_GameManager.Instancia?.RestarJuego();
     }
 
+    public void Activar_panelRanking()
+    {
+        panel_Ranking.SetActive(true);
+    }
 }
